@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Layout, Row, Col, Card, Button, Typography } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectProductById, fetchAllProductByIdAsync } from './productSlice'; // Adjust based on your Redux logic
+import { addToCart } from '../navbar/cartSlice'; // Import the addToCart action from cartSlice
 import './ProductDetails.css'; 
 import Navbar from '../navbar/Navbar';
 
@@ -26,6 +27,11 @@ const ProductDetail = () => {
   if (!product) {
     return <div>Loading product details...</div>;
   }
+
+  // Handle add to cart action
+  const handleAddToCart = () => {
+    dispatch(addToCart(product)); // Dispatch the addToCart action with the selected product
+  };
 
   return (
     <Layout>
@@ -52,7 +58,12 @@ const ProductDetail = () => {
               <Title level={2}>{product.name}</Title>
               <Paragraph>{product.description}</Paragraph>
               <Title level={4}>${product.price}</Title>
-              <Button type="primary" size="large" className="add-to-cart-btn">
+              <Button 
+                type="primary" 
+                size="large" 
+                className="add-to-cart-btn" 
+                onClick={handleAddToCart}
+              >
                 Add to Cart
               </Button>
             </Card>

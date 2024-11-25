@@ -1,32 +1,122 @@
-
-
+/* General styles for the Navbar */
 .header {
-    background: #fff;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-  }
-  
+  background-color: #f0f2f5;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1890ff;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.search-bar {
+  width: 200px;
+  transition: width 0.3s ease;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+}
+
+.menu .ant-menu-item {
+  font-size: 16px;
+}
+
+.cart-button {
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  margin-left: 20px;
+}
+
+.cart-badge .ant-badge-count {
+  background-color: #1890ff;
+}
+
+.login-button {
+  margin-left: 20px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
   .logo {
-    font-size: 24px;
-    font-weight: bold;
-    margin-right: auto;
+    font-size: 18px;
+    display: none;
   }
-  
-  .search-bar {
-    width: 300px;
-    margin-right: 20px;
-  }
-  
+
   .menu {
-    line-height: 64px;
-    margin-right: 20px;
+    display: none;
   }
-  
-  .login-button {
-    margin-right: 20px;
+
+  .search-bar {
+    width: 100%;
   }
-  
-  /* .cart-button {
-    /* Additional styles can be added here if needed */
-  } */
+
+  .cart-button {
+    margin-left: 20px;
+  }
+
+  .cart-badge .ant-badge-count {
+    display: none;
+  }
+
+  .cart-badge {
+    margin-left: 20px;
+  }
+}
+
+/* Styles for the Cart Drawer */
+.ant-drawer-content {
+  padding: 20px;
+}
+
+.ant-drawer-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.ant-list-item-meta-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.ant-list-item-meta-description {
+  font-size: 14px;
+}
+
+.ant-btn-primary {
+  width: 100%;
+}
+
+.ant-input-number {
+  width: 70px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.cart-item .item-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cart-item .item-price {
+  font-weight: bold;
+}

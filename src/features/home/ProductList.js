@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../navbar/Navbar';
-import { Layout, Radio, Row, Col, Card, Button } from 'antd';
+import { Layout, Select, Row, Col, Card, Button, Radio } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   selectAllProducts, 
@@ -12,6 +12,7 @@ import {
 } from './productSlice';
 import { Link } from 'react-router-dom';
 import './ProductList.css';
+const { Option } = Select;
 
 const { Content, Footer, Sider } = Layout;
 const maxDescriptionLength = 30;
@@ -39,12 +40,10 @@ export function ProductList() {
   }, [dispatch]);
 
   // Handle category selection
-  const handleCategoryChange = (e) => {
-    const category = e.target.value;
+  const handleCategoryChange = (category) => {
     setSelectedCategory(category);
 
     if (category) {
-      console.log(category);
       dispatch(fetchProductByCategoriesAsync(category));
     }
   };
@@ -56,7 +55,7 @@ export function ProductList() {
     <Layout>
       <Navbar />
       <Layout>
-        <Sider width={200} className="site-layout-background">
+        {/* <Sider width={200} className="site-layout-background">
           <div className="filter">
             <h3>Filter by Categories</h3>
             <Radio.Group onChange={handleCategoryChange} value={selectedCategory}>
@@ -67,12 +66,27 @@ export function ProductList() {
               ))}
             </Radio.Group>
           </div>
-        </Sider>
+        </Sider> */}
+        <div className="filter">
+          <h3>Filter by Categories</h3>
+          <Select
+            value={selectedCategory || undefined}
+            onChange={handleCategoryChange}
+            style={{ width: '100%' }}
+            placeholder="Select a category"
+          >
+            {typesOfCategories.map((category) => (
+              <Option key={category} value={category}>
+                {category}
+              </Option>
+            ))}
+          </Select>
+        </div>
         <Layout className="layout">
           <Content className="content">
             <Row gutter={16} className="row" wrap>
               {productsToDisplay.map(product => (
-                <Col span={8} key={product.id}>
+                <Col span={8}xs={24} sm={12} md={8} lg={6} key={product.id}>
                   <Card
                     hoverable
                     className="card"
