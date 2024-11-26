@@ -10,11 +10,11 @@ const { Header } = Layout;
 const { Text } = Typography;
 
 const Navbar = () => {
-  const [drawerVisible, setDrawerVisible] = useState(false); // Cart drawer visibility state
-  const [isMobile, setIsMobile] = useState(false); // Check for mobile screen size
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false); 
   const dispatch = useDispatch();
-  const cartItems = useSelector(selectCartItems); // Get cart items from Redux
-  const totalPrice = useSelector(selectCartTotal); // Get total price from Redux
+  const cartItems = useSelector(selectCartItems); 
+  const totalPrice = useSelector(selectCartTotal); 
 
   // Check window size to update isMobile state
   useEffect(() => {
@@ -45,10 +45,10 @@ const Navbar = () => {
 
   return (
     <Header className="header">
-      {/* Logo */}
+    
       <div className="logo">{isMobile ? null : 'E-Commerce'}</div>
 
-      {/* Search Bar for All Screens */}
+      
       <div className="search-container">
         <Input.Search
           placeholder="Search products..."
@@ -57,24 +57,24 @@ const Navbar = () => {
         />
       </div>
 
-      {/* Login Button */}
+      
       <Link to={'/login'}>
         <Button type="primary" icon={<UserOutlined />} className="login-button">
           Login
         </Button>
       </Link>
 
-      {/* Cart Button with Badge */}
-      <Badge count={cartItems.length}>
+      
+      <Badge  className="cart-badge" count={cartItems.length}>
         <Button icon={<ShoppingCartOutlined />} className="cart-button" onClick={showDrawer} />
       </Badge>
 
-      {/* Cart Drawer */}
+      
       <Drawer
         title="Shopping Cart"
         placement="right"
+        visible = {drawerVisible}
         onClose={closeDrawer}
-        visible={drawerVisible}
         width={400}
       >
         {cartItems.length === 0 ? (

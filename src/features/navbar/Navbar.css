@@ -20,6 +20,7 @@
 }
 
 .search-bar {
+
   width: 200px;
   transition: width 0.3s ease;
 }
@@ -37,17 +38,25 @@
   background-color: transparent;
   border: none;
   font-size: 20px;
-  margin-left: 20px;
+  margin-right: 20px;
+
+
 }
 
 .cart-badge .ant-badge-count {
   background-color: #1890ff;
+  margin-right: 20px;
 }
 
 .login-button {
-  margin-left: 20px;
+  margin-right: 30px;
 }
-
+@media (min-width: 768px){
+  .search-bar{
+    margin-left: 500px;
+    width: 400px;
+  }
+}
 /* Responsive Styles */
 @media (max-width: 768px) {
   .logo {
@@ -76,7 +85,6 @@
   }
 }
 
-/* Styles for the Cart Drawer */
 .ant-drawer-content {
   padding: 20px;
 }
