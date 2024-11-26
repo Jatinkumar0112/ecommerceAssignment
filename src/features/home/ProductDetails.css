@@ -1,53 +1,99 @@
-
+/* Main Content Area */
 .product-content {
-    padding: 24px;
-    min-height: 280px;
-  }
-  
-  .product-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    justify-content: center;
-  }
-  
+  padding: 32px 24px;
+  min-height: 100vh;
+  background-color: #fafafa;
+}
+
+/* Row styling for product display */
+.product-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Center the items */
+  gap: 16px;
+}
+
+/* Column styling for product image and details */
+.product-col {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%; /* Ensure each column takes full width */
+  max-width: calc(50% - 16px); /* Limit the max width of the columns */
+}
+
+.product-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px; /* Rounded corners for the image */
+}
+
+/* Styling for the product card */
+.product-card {
+  border-radius: 8px;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+/* Title and description styles */
+.product-card .ant-typography {
+  margin-bottom: 16px;
+}
+
+
+.product-description {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+.product-price {
+  color: #1d1d1b;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+/* Add to Cart Button */
+.add-to-cart-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-to-cart-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Media Query for Small Screens */
+@media (max-width: 768px) {
   .product-col {
-    flex: 1 1 calc(50% - 16px); 
-    max-width: calc(50% - 16px); 
-    display: flex;
-    justify-content: center;
-  }
-  
-  .product-col img {
+    flex: 1 1 100%; /* Stack product details and image */
     max-width: 100%;
-    height: auto;
   }
-  
-  .product-image {
-    width: 100%;
-    height: auto;
-  }
-  
+
   .product-card {
-    border: none;
+    max-width: 100%;
   }
-  
-  .product-card .ant-typography {
-    margin-bottom: 16px;
+
+  .product-description {
+    font-size: 14px; /* Adjust font size for mobile screens */
   }
-  
-  .add-to-cart-btn {
-    width: 100%;
-  }
-  
-  @media screen and (max-width: 768px) {
-    .product-col {
-      flex: 1 1 100%; /* Stack columns on smaller screens */
-      max-width: 100%;
-    }
-  }
-  
-  .product-footer {
-    text-align: center;
-  }
-  
+}
+
+/* Footer Styling */
+.product-footer {
+  text-align: center;
+  padding: 16px;
+  background-color: #f1f1f1;
+  margin-top: 30px;
+}

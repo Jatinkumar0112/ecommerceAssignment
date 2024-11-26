@@ -7,6 +7,7 @@ const initialState = {
   products: [],
   categorie:[],
   typesOfCategories:[],
+  searchQuery: '',
   status: 'idle',
   selectedProduct:null,
 };
@@ -43,6 +44,13 @@ export const fetchProductByCategoriesAsync = createAsyncThunk(
 export const productSlice = createSlice({
   name: 'product',
   initialState,
+  reducers: {
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
+     
+    },
+    
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllProductsAsync.pending, (state) => {
@@ -88,10 +96,16 @@ export const productSlice = createSlice({
   },
 });
 
-
+export const selectProductState = (state) => state.product;
+export const { setSearchQuery} = productSlice.actions;
 export const selectAllProducts = (state) => state.product.products;
 export const selectProductById = (state) => state.product.selectedProduct;
 export const selectProductByCategories = (state) => state.product.categorie;
 export const selectTypesOfCategories = (state) => state.product.typesOfCategories;
-// console.log(selectAllProducts)
+export const selectSearchedProducts = (state) => {
+  const { products, searchQuery } = state.product;
+  return products.filter((product) =>
+    product.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+};
 export default productSlice.reducer;

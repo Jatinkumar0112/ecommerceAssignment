@@ -22,17 +22,24 @@
   padding-bottom: 2rem; 
 }
 
-/* .filter {
-  padding: 16px;
-  background-color: #f9f9f9;
-  border-right: 1px solid #d9d9d9;
+.filter {
+  padding: 24px;
+  background-color: #f4f6f9; /* Lighter background for a cleaner look */
+  border-right: 2px solid #e0e0e0; /* Slightly thicker border for better separation */
+  border-radius: 8px; /* Rounded corners for a softer look */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
 .filter h3 {
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: 600; /* Bold title */
   margin-bottom: 16px;
-} */
+  color: #333; /* Darker text for better contrast */
+}
 
+.filter-select{
+ width: 50%;
+}
 
 .card {
   max-height: 400px; 
@@ -49,4 +56,33 @@
 .card-title {
   margin-top: 16px;
   font-weight: bold;
+}
+/* Adjusts the Select component */
+.filter-select {
+  width: 50% !important; /* Ensure it takes priority */
+}
+
+.ant-select {
+  font-size: 14px !important; /* Smaller font size for the Select input */
+  height: 36px !important; /* Reduce the height of the Select input */
+  border-radius: 4px !important; /* Slightly rounded corners for the select */
+}
+
+.ant-select-selector {
+  height: 36px !important; /* Match the height of the input */
+  padding: 6px 12px !important; /* Reduce padding for a more compact look */
+}
+
+.ant-select-item-option {
+  font-size: 14px !important; /* Smaller font size for the options */
+  padding: 6px 12px !important; /* Reduce padding for options */
+}
+
+.ant-select-item-option:hover {
+  background-color: #e6f7ff !important; /* Light hover effect */
+}
+
+.ant-select-item-option-selected {
+  background-color: #1890ff !important; /* Blue background for selected item */
+  color: #fff !important; /* White text when selected */
 }

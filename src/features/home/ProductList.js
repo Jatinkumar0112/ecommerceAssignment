@@ -4,11 +4,13 @@ import { Layout, Select, Row, Col, Card, Button, Radio } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   selectAllProducts, 
+  selectSearchedProducts,
   fetchAllProductsAsync, 
   selectTypesOfCategories, 
   fetchTypesOfCategoriesAsync, 
   selectProductByCategories, 
-  fetchProductByCategoriesAsync 
+  fetchProductByCategoriesAsync, 
+  selectProductState
 } from './productSlice';
 import { Link } from 'react-router-dom';
 import './ProductList.css';
@@ -29,9 +31,12 @@ const truncateTitle = (title, maxLength) => {
 export function ProductList() {
   const dispatch = useDispatch();
   const allProducts = useSelector(selectAllProducts);
+  const searchedProducts = useSelector(selectSearchedProducts);
   const typesOfCategories = useSelector(selectTypesOfCategories);
   const filteredProducts = useSelector(selectProductByCategories);
+  // const productState = useSelector(selectProductState);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const {searchQuery} = useSelector(selectProductState);
 
   // Fetch all products and categories on component mount
   useEffect(() => {
@@ -41,47 +46,48 @@ export function ProductList() {
 
   // Handle category selection
   const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-
-    if (category) {
+    if (category === "all") { 
+      setSelectedCategory(null); // Clear the filter
+      dispatch(fetchAllProductsAsync()); // Fetch and display all products
+    } else {
+      setSelectedCategory(category);
       dispatch(fetchProductByCategoriesAsync(category));
     }
   };
 
   // Determine the products to display
-  const productsToDisplay = selectedCategory ? filteredProducts : allProducts;
+  let productsToDisplay = allProducts; // Default to all products
+
+  if (searchQuery){
+    productsToDisplay = searchedProducts; // If search query exists, use searched products
+  } else if (selectedCategory) {
+    productsToDisplay = filteredProducts; // If a category is selected, use filtered products
+  }
 
   return (
     <Layout>
       <Navbar />
       <Layout>
-        {/* <Sider width={200} className="site-layout-background">
-          <div className="filter">
-            <h3>Filter by Categories</h3>
-            <Radio.Group onChange={handleCategoryChange} value={selectedCategory}>
-              {typesOfCategories.map((category) => (
-                <Radio key={category} value={category}>
-                  {category}
-                </Radio>
-              ))}
-            </Radio.Group>
-          </div>
-        </Sider> */}
         <div className="filter">
-          <h3>Filter by Categories</h3>
+          <h3>Filter By Categories</h3>
           <Select
             value={selectedCategory || undefined}
             onChange={handleCategoryChange}
             style={{ width: '100%' }}
             placeholder="Select a category"
+            className="filter-select"
           >
             {typesOfCategories.map((category) => (
               <Option key={category} value={category}>
                 {category}
               </Option>
             ))}
+            
+              <Option key={"all"} value={"all"}>All products</Option>
+            
           </Select>
         </div>
+
         <Layout className="layout">
           <Content className="content">
             <Row gutter={16} className="row" wrap>

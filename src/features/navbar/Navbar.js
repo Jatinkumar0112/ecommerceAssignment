@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Input, Button, Badge, Drawer, List, InputNumber, Typography } from 'antd';
-import { ShoppingCartOutlined, UserOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Layout, Input, Button, Badge, Drawer, List, InputNumber, Typography, Space } from 'antd';
+import { ShoppingCartOutlined, UserOutlined, DeleteOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Link, useLocation,useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectCartItems, selectCartTotal, removeFromCart, updateQuantity } from './cartSlice'; // Redux actions
+import { selectCartItems, selectCartTotal, removeFromCart, updateQuantity , clearCart} from './cartSlice'; // Redux actions
+import { selectAuthState, logout } from '../auth/authSlice'; // Auth actions
 import './Navbar.css';
+import { setSearchQuery } from '../home/productSlice';
 
 const { Header } = Layout;
 const { Text } = Typography;
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false); 
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems); 
   const totalPrice = useSelector(selectCartTotal); 
+  const authState = useSelector(selectAuthState); 
+  console.log(authState)
+  const location = useLocation();
 
   // Check window size to update isMobile state
   useEffect(() => {
@@ -43,37 +49,70 @@ const Navbar = () => {
     dispatch(removeFromCart(id));
   };
 
+  // Logout function
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+  const handleCheckout = (item) => {
+    if (!authState.isAuthenticated) {
+     
+      navigate('/login', { state: { fromCart: true } }); 
+    } else {
+      dispatch(clearCart()); 
+      // alert('Check out All items'); 
+    }
+  };
+  const handleSearch = (value) => {
+    // console.log(value)
+    dispatch(setSearchQuery(value)); // Dispatch the search query to Redux
+  };
+
+  const isProductDetailsPage = location.pathname.startsWith('/products/');
+  const totalItemsInCart = cartItems.reduce((total, item) => total + item.quantity, 0);
+
   return (
     <Header className="header">
-    
-      <div className="logo">{isMobile ? null : 'E-Commerce'}</div>
-
-      
-      <div className="search-container">
-        <Input.Search
-          placeholder="Search products..."
-          className="search-bar"
-          enterButton
-        />
-      </div>
-
-      
-      <Link to={'/login'}>
-        <Button type="primary" icon={<UserOutlined />} className="login-button">
-          Login
-        </Button>
+      <Link to={'/'}>
+        <div className="logo">E-Commerce</div>
       </Link>
+      {!isProductDetailsPage && (
+        <div className="search-container">
+          <Input.Search
+            placeholder="Search products..."
+            className="search-bar"
+            onSearch={handleSearch}
+            enterButton
+          />
+        </div>
+      )}
 
-      
-      <Badge  className="cart-badge" count={cartItems.length}>
-        <Button icon={<ShoppingCartOutlined />} className="cart-button" onClick={showDrawer} />
-      </Badge>
+      <Space>
+        {authState.isAuthenticated ? (
+          <Button
+            type="primary"
+            icon={<LogoutOutlined />}
+            className="logout-button"
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        ) : (
+          <Link to={'/login'}>
+            <Button type="primary" icon={<UserOutlined />} className="login-button">
+              Login
+            </Button>
+          </Link>
+        )}
 
-      
+        <Badge className="cart-badge" count={totalItemsInCart}>
+          <Button icon={<ShoppingCartOutlined />} className="cart-button" onClick={showDrawer} />
+        </Badge>
+      </Space>
+
       <Drawer
         title="Shopping Cart"
         placement="right"
-        visible = {drawerVisible}
+        visible={drawerVisible}
         onClose={closeDrawer}
         width={400}
       >
@@ -103,7 +142,6 @@ const Navbar = () => {
                 >
                   <List.Item.Meta
                     title={item.name}
-                    // description={`$${item.price}`}
                   />
                   <div>Total: ${item.price * item.quantity}</div>
                 </List.Item>
@@ -112,7 +150,7 @@ const Navbar = () => {
             <div style={{ marginTop: 20 }}>
               <Text strong>Total Price: ${totalPrice.toFixed(2)}</Text>
             </div>
-            <Button type="primary" block style={{ marginTop: 20 }}>
+            <Button type="primary" block style={{ marginTop: 20 } } onClick={handleCheckout}>
               Proceed to Checkout
             </Button>
           </>

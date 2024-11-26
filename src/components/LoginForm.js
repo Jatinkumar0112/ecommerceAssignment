@@ -1,52 +1,51 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {notification, Form, Input, Button, Alert } from 'antd';
+import { notification, Form, Input, Button, Alert, Spin } from 'antd';
 import { loginSuccess } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
+    setLoading(true); // Set loading state to true
+    setError(null); // Reset error state
+
     try {
-      const { email, password } = values;
+      const { username, password } = values;
 
-      // Fetch user data from JSONPlaceholder
-      const response = await fetch('https://jsonplaceholder.typicode.com/users');
+      // Make a POST request to the fakestore API
+      const response = await fetch('https://fakestoreapi.com/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to fetch users.');
+        throw new Error('Invalid username or password');
       }
 
-      const users = await response.json();
-      const user = users.find((user) => user.email === email);
+      const data = await response.json();
 
-      if (user) {
-        if (password === 'password123') {
-          console.log("welcome")
-          dispatch(loginSuccess(user));
-          setError(null);
-          notification.open({
-            message: `Welcome, ${user.name}!`,
-            description: 'You have successfully logged in.',
-            duration: 5, // Auto close after 5 seconds
-            placement: 'top',
-          });
-    
-          // Redirect to home page
-          setTimeout(() => {
-            navigate('/');
-          }, 5000);
-          navigate('/'); 
-        } else {
-          setError('Incorrect password!');
-        }
-      } else {
-        setError('User not found!');
-      }
+      // Store the token and update Redux store
+      const { token } = data;
+      dispatch(loginSuccess({ username, token }));
+
+      notification.success({
+        message: `Welcome, ${username}!`,
+        description: 'You have successfully logged in.',
+        duration: 3, 
+      });
+
+      
+      navigate('/');
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -54,10 +53,10 @@ const LoginForm = () => {
     <div style={{ maxWidth: '400px', margin: '50px auto' }}>
       <Form name="login" onFinish={onFinish}>
         <Form.Item
-          name="email"
-          rules={[{ required: true, message: 'Please input your email!' }]}
+          name="username"
+          rules={[{ required: true, message: 'Please input your username!' }]}
         >
-          <Input placeholder="Email" />
+          <Input placeholder="Username" />
         </Form.Item>
 
         <Form.Item
@@ -68,8 +67,8 @@ const LoginForm = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-            Login
+          <Button type="primary" htmlType="submit" style={{ width: '100%' }} disabled={loading}>
+            {loading ? <Spin /> : 'Login'}
           </Button>
         </Form.Item>
       </Form>

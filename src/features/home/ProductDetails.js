@@ -12,7 +12,6 @@ const { Title, Paragraph } = Typography;
 
 const ProductDetail = () => {
   const { id } = useParams();
-  console.log(id);
   const dispatch = useDispatch();
 
   // Fetch product details when the component mounts
@@ -32,14 +31,14 @@ const ProductDetail = () => {
   const handleAddToCart = () => {
     dispatch(addToCart(product)); // Dispatch the addToCart action with the selected product
   };
-
+  
   return (
     <Layout>
-      <Navbar/>
+      <Navbar />
       <Content className="product-content">
-        <Row gutter={16} className="product-row">
+        <Row gutter={[16, 16]} className="product-row">
           {/* Product Image */}
-          <Col className="product-col">
+          <Col xs={24} sm={12} md={12} lg={10} className="product-col product-image">
             <Card
               hoverable
               cover={
@@ -53,11 +52,11 @@ const ProductDetail = () => {
           </Col>
 
           {/* Product Details */}
-          <Col className="product-col">
+          <Col xs={24} sm={12} md={12} lg={14} className="product-col">
             <Card className="product-card">
               <Title level={2}>{product.name}</Title>
-              <Paragraph>{product.description}</Paragraph>
-              <Title level={4}>${product.price}</Title>
+              <Paragraph className="product-description">{product.description}</Paragraph>
+              <Title level={4} className="product-price">${product.price}</Title>
               <Button 
                 type="primary" 
                 size="large" 
