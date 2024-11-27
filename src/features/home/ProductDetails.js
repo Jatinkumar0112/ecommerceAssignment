@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Layout, Row, Col, Card, Button, Typography } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
-import { selectProductById, fetchAllProductByIdAsync } from './productSlice'; // Adjust based on your Redux logic
 import { addToCart } from '../navbar/cartSlice'; // Import the addToCart action from cartSlice
+import { useDispatch } from 'react-redux';
+import { fetchProductById } from './productAPI'; // Your API call for fetching product details
 import './ProductDetails.css'; 
-import Navbar from '../navbar/Navbar';
 
 const { Content, Footer } = Layout;
 const { Title, Paragraph } = Typography;
@@ -13,28 +12,42 @@ const { Title, Paragraph } = Typography;
 const ProductDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-
+  
+  const [product, setProduct] = useState({}); // Local state for product
+  const [loading, setLoading] = useState(true); // Loading state
+  
   // Fetch product details when the component mounts
   useEffect(() => {
-    dispatch(fetchAllProductByIdAsync(id));
-  }, [dispatch, id]);
+    const fetchProductDetails = async () => {
+      try {
+        const productData = await fetchProductById(id); // Fetch product from API
+        // console.log({productData})
+        setProduct(productData); // Set product data in local state
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      } finally {
+        setLoading(false); // Set loading to false once the data is fetched
+      }
+    };
 
-  // Select the product from Redux store
-  const product = useSelector((state) => selectProductById(state, id));
+    fetchProductDetails(); // Call the function to fetch product details
+  }, [id]);
+  
 
   // Show loading message while data is fetching
-  if (!product) {
+  if (loading) {
     return <div>Loading product details...</div>;
   }
 
   // Handle add to cart action
   const handleAddToCart = () => {
-    dispatch(addToCart(product)); // Dispatch the addToCart action with the selected product
+    if (product) {
+      dispatch(addToCart(product.data)); // Dispatch the addToCart action with the selected product
+    }
   };
   
   return (
-    <Layout>
-      <Navbar />
+    <Layout className="layout">
       <Content className="product-content">
         <Row gutter={[16, 16]} className="product-row">
           
@@ -43,8 +56,8 @@ const ProductDetail = () => {
               hoverable
               cover={
                 <img
-                  alt={product.name}
-                  src={product.image || 'https://via.placeholder.com/300?text=Product+Image'}
+                  alt={product.data.name}
+                  src={product.data.image || 'https://via.placeholder.com/300?text=Product+Image'}
                   className="product-image"
                 />
               }
@@ -53,9 +66,9 @@ const ProductDetail = () => {
 
           <Col xs={24} sm={12} md={12} lg={14} className="product-col">
             <Card className="product-card">
-              <Title level={2}>{product.name}</Title>
-              <Paragraph className="product-description">{product.description}</Paragraph>
-              <Title level={4} className="product-price">${product.price}</Title>
+              <Title level={2}>{product.data.name}</Title>
+              <Paragraph className="product-description">{product.data.description}</Paragraph>
+              <Title level={4} className="product-price">${product.data.price}</Title>
               <Button 
                 type="primary" 
                 size="large" 

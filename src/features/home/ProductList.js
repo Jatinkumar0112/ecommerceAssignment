@@ -1,115 +1,143 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../navbar/Navbar';
-import { Layout, Select, Row, Col, Card, Button, Radio } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
-import { 
-  selectAllProducts, 
-  selectSearchedProducts,
-  fetchAllProductsAsync, 
-  selectTypesOfCategories, 
-  fetchTypesOfCategoriesAsync, 
-  selectProductByCategories, 
-  fetchProductByCategoriesAsync, 
-  selectProductState
-} from './productSlice';
+import { Layout, Select, Row, Col, Card, Button, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import './ProductList.css';
-const { Option } = Select;
+import { fetchAllProducts, fetchProductByCategories, fetchTypesOfCategories } from './productAPI';
 
-const { Content, Footer, Sider } = Layout;
+const { Option } = Select;
+const { Title } = Typography;
+const { Content, Footer } = Layout;
+
 const maxDescriptionLength = 30;
 const truncateDescription = (description, maxLength) => {
-  if (!description) return " "; // Return an empty string if description is undefined
+  if (!description) return " ";
   return description.length > maxLength ? description.substring(0, maxLength) + '...' : description;
 };
+
 const maxTitleLength = 15;
 const truncateTitle = (title, maxLength) => {
-  if (!title) return " "; 
+  if (!title) return " ";
   return title.length > maxLength ? title.substring(0, maxLength) + '...' : title;
 };
 
-export function ProductList() {
-  const dispatch = useDispatch();
-  const allProducts = useSelector(selectAllProducts);
-  const searchedProducts = useSelector(selectSearchedProducts);
-  const typesOfCategories = useSelector(selectTypesOfCategories);
-  const filteredProducts = useSelector(selectProductByCategories);
-  // const productState = useSelector(selectProductState);
+const ProductList = ({searchQuery})  => {
+
+  const [allProducts, setAllProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [typesOfCategories, setTypesOfCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const {searchQuery} = useSelector(selectProductState);
+  // const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Fetch all products and categories on component mount
   useEffect(() => {
-    dispatch(fetchTypesOfCategoriesAsync());
-    dispatch(fetchAllProductsAsync());
-  }, [dispatch]);
+    const fetchData = async() => {
+      setLoading(true);
+      try {
+        const products = await fetchAllProducts();
+        const categories = await fetchTypesOfCategories();
+        setAllProducts(products.data);
+        setTypesOfCategories(categories.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Handle category selection
-  const handleCategoryChange = (category) => {
-    if (category === "all") { 
-      setSelectedCategory(null); // Clear the filter
-      dispatch(fetchAllProductsAsync()); // Fetch and display all products
+  const handleCategoryChange = async (category) => {
+    if (category === "all") {
+      setSelectedCategory(null);
+      setFilteredProducts([]);
     } else {
       setSelectedCategory(category);
-      dispatch(fetchProductByCategoriesAsync(category));
+      setLoading(true);
+      try {
+        const response = await fetchProductByCategories(category);
+        setFilteredProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching category products:', error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   // Determine the products to display
-  let productsToDisplay = allProducts; // Default to all products
-
-  if (searchQuery){
-    productsToDisplay = searchedProducts; // If search query exists, use searched products
-  } else if (selectedCategory) {
-    productsToDisplay = filteredProducts; // If a category is selected, use filtered products
-  }
+  const productsToDisplay = searchQuery
+    ? allProducts.filter((product) =>
+        product.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : selectedCategory
+    ? filteredProducts
+    : allProducts;
 
   return (
     <Layout>
-      <Navbar />
+      {/* <Navbar /> */}
       <Layout>
         <div className="filter">
-          <h3>Filter By Categories</h3>
+          <Title level={3} className="filter-title">
+            Filter By Categories
+          </Title>
           <Select
-            value={selectedCategory || undefined}
+            value={selectedCategory || 'all'}
             onChange={handleCategoryChange}
             style={{ width: '100%' }}
             placeholder="Select a category"
             className="filter-select"
           >
+            <Option key="all" value="all">
+              All Products
+            </Option>
             {typesOfCategories.map((category) => (
               <Option key={category} value={category}>
                 {category}
               </Option>
             ))}
-            
-              <Option key={"all"} value={"all"}>All products</Option>
-            
           </Select>
         </div>
 
         <Layout className="layout">
           <Content className="content">
-            <Row gutter={16} className="row" wrap>
-              {productsToDisplay.map(product => (
-                <Col span={8}xs={24} sm={12} md={8} lg={6} key={product.id}>
-                  <Card
-                    hoverable
-                    className="card"
-                    cover={<img alt={product.name} src={product.image} className="card-image" />}
-                  >
-                    <Card.Meta 
-                      title={truncateTitle(product.title, maxTitleLength)} 
-                      description={truncateDescription(product.description, maxDescriptionLength)} 
-                    />
-                    <div className="card-title">${product.price}</div>
-                    <Link to={`/products/${product.id}`}>
-                    <Button color="primary" variant="filled"> View Details</Button>
-                    </Link>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
+            {loading ? (
+              <div>Loading products...</div>
+            ) : productsToDisplay.length === 0 ? (
+              <div className="no-products">No products available</div>
+            ) : (
+              <Row gutter={[16, 16]} className="row" wrap>
+                {productsToDisplay.map((product) => (
+                  <Col xs={24} sm={12} md={8} lg={6} key={product.id}>
+                    <Card
+                      hoverable
+                      className="card"
+                      cover={
+                        <img
+                          alt={product.name}
+                          src={product.image || 'https://via.placeholder.com/300'}
+                          className="card-image"
+                        />
+                      }
+                    >
+                      <Card.Meta
+                        title={truncateTitle(product.title, maxTitleLength)}
+                        description={truncateDescription(product.description, maxDescriptionLength)}
+                      />
+                      <div className="card-title">${product.price}</div>
+                      <Link to={`/products/${product.id}`}>
+                        <Button type="primary" block>
+                          View Details
+                        </Button>
+                      </Link>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            )}
           </Content>
         </Layout>
       </Layout>
@@ -119,3 +147,4 @@ export function ProductList() {
     </Layout>
   );
 }
+export default ProductList;

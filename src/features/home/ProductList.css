@@ -86,3 +86,10 @@
   background-color: #1890ff !important; /* Blue background for selected item */
   color: #fff !important; /* White text when selected */
 }
+.filter-title{
+  font-family: 'Arial';
+  font-weight: 600 ;
+  background-color: #bad2e9;
+  border-radius: 4px;
+  width: 20%;
+}
