@@ -56,6 +56,10 @@
     margin-left: 500px;
     width: 400px;
   }
+  .log{
+    font-size: 18px;
+    display: none;
+  }
 }
 /* Responsive Styles */
 @media (max-width: 768px) {
