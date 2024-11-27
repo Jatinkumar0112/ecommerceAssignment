@@ -37,8 +37,8 @@ const ProductDetail = () => {
       <Navbar />
       <Content className="product-content">
         <Row gutter={[16, 16]} className="product-row">
-          {/* Product Image */}
-          <Col xs={24} sm={12} md={12} lg={10} className="product-col product-image">
+          
+          <Col xs={24} sm={12} md={12} lg={10} className="product-col">
             <Card
               hoverable
               cover={
@@ -51,7 +51,6 @@ const ProductDetail = () => {
             />
           </Col>
 
-          {/* Product Details */}
           <Col xs={24} sm={12} md={12} lg={14} className="product-col">
             <Card className="product-card">
               <Title level={2}>{product.name}</Title>

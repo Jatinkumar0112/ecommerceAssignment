@@ -105,6 +105,7 @@ export const selectTypesOfCategories = (state) => state.product.typesOfCategorie
 export const selectSearchedProducts = (state) => {
   const { products, searchQuery } = state.product;
   return products.filter((product) =>
+    product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 };
